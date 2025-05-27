@@ -2,6 +2,8 @@
 #define VEC3_H
 
 class vec3{
-    double e[3];         
+   public:
+       double e[3];
+       
 }
 #endif
