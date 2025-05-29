@@ -23,6 +23,22 @@ class vec3{
        double z() const { return e[2]; }
 
        //operators:
+       vec3 operator+(const vec3& other){
+           return vec3(e[0]+other.e[0], e[1]+other.e[1],e[2]+other.e[2]);
+       }
+       
+       vec3 operator-(const vec3& other){
+           return vec3(e[0]-other.e[0], e[1]-other.e[1],e[2]-other.e[2]);
+       }
+
+       vec3 operator*(double t){
+           return vec3(e[0]*t, e[1]*t, e[2]*t);
+       }
+
+       vec3 operator/(double t){
+           return vec3(e[0]/t, e[1]/t, e[2]/t);
+       }
+
        vec3 operator-() const{
            return vec3(-e[0], -e[1], -e[2]);
        }
@@ -59,6 +75,27 @@ class vec3{
        double length(){
            return std::sqrt(length_squared());
        }
+    
+       vec3 unit(){
+           //double len = length();
+           //vec3 unit_vec = vec3();
+           //unit_vec[0] = e[0]/len;
+           //unit_vec[1] = e[1]/len;
+           //unit_vec[2] = e[2]/len;
+           //return unit_vec;
+           return *this/length();
+       }
+
+       double dot(const vec3& other){
+           return ((e[0]*other.e[0])+(e[1]*other.e[1])+(e[2]*other.e[2]));
+       }
+
+       vec3 cross(const vec3& other){
+           return vec3(e[1] * other.e[2] - e[2] * other.e[1],
+                   e[2] * other.e[0] - e[0] * other.e[2],
+                   e[0] * other.e[1] - e[1] * other.e[0]);
+       }
+
 };
 
 
