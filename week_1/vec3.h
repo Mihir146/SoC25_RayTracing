@@ -120,7 +120,7 @@ vec3 cross(const vec3& v1, const vec3& v2) {
 }
 
 vec3 reflect (const vec3& v, const vec3& normal){
-    vec3 reflected_ray = (v - (2*dot(v,normal.unit()))*(normal.unit()));
+    vec3 reflected_ray = v - (2*dot(v, normal.unit())*normal.unit());
     return reflected_ray;
 
 }
@@ -128,7 +128,7 @@ vec3 reflect (const vec3& v, const vec3& normal){
 vec3 refract (const vec3& v, const vec3& normal, double eta){ //n1-> r_index of incident medium , n2-> .. of refracted medium eta->n1/n2
    
         auto cos_theta = std::fmin(dot(-v.unit(),normal.unit()), 1.0); //angle b/w the incident and normal 
-        vec3 rr_perp = eta*(v.unit() + cos_theta*normal.unit());
+        vec3 rr_perp = eta*(v + cos_theta*normal.unit());
         vec3 rr_para = -std::sqrt(std::fabs(1.0 - rr_perp.length_squared())) * normal.unit();
         vec3 refracted_ray = rr_perp + rr_para;
         //taking care of TIL :
