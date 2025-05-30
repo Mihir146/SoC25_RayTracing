@@ -118,27 +118,22 @@ vec3 cross(const vec3& v1, const vec3& v2) {
             v1.e[2] * v2.e[0] - v1.e[0] * v2.e[2],
             v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0]);
 }
-
+//all incident vec and normal vectors are normalized
 vec3 reflect (const vec3& v, const vec3& normal){
-    vec3 reflected_ray = v - (2*dot(v, normal.unit())*normal.unit());
+    vec3 reflected_ray = v.unit() - (2*dot(v.unit(), normal.unit())*normal.unit());
     return reflected_ray;
-
 }
 
-vec3 refract (const vec3& v, const vec3& normal, double eta){ //n1-> r_index of incident medium , n2-> .. of refracted medium eta->n1/n2
-   
-        auto cos_theta = std::fmin(dot(-v.unit(),normal.unit()), 1.0); //angle b/w the incident and normal 
-        vec3 rr_perp = eta*(v + cos_theta*normal.unit());
-        vec3 rr_para = -std::sqrt(std::fabs(1.0 - rr_perp.length_squared())) * normal.unit();
-        vec3 refracted_ray = rr_perp + rr_para;
-        //taking care of TIL :
-        auto sin_theta = std::sqrt(1.0 - (cos_theta * cos_theta));
-        if(eta * sin_theta > 1.0){
-            return reflect(v, -normal);
-        }
-        else{
-            return refracted_ray;
-        }
+vec3 refract (const vec3& v, const vec3& normal, double n1, double n2){ //n1-> r_index of incident medium , n2-> .. of refracted medium eta->n1/n2
+    auto eta = n1/n2;
+    auto cos_thetaI =  -dot(v.unit(), normal.unit());
+    auto sin_thetaT_sqr = eta*eta*(1.0-cos_thetaI*cos_thetaI);
+    auto cos_thetaT = std::sqrt(1.0 - sin_thetaT_sqr);
+    vec3 refracted_ray = eta*v + (eta*cos_thetaI - cos_thetaT)*normal.unit();
+    if(sin_thetaT_sqr > 1.0){
+        return reflect(v, normal);
+    } 
+    return refracted_ray.unit();
 }
 
 #endif
