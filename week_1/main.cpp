@@ -1,4 +1,5 @@
 #include<iostream>
+#include"vec3.h"
 
 int main(){
     int img_width = 256;
