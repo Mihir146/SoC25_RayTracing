@@ -73,21 +73,10 @@ class vec3{
            return *this/length();
        }
        friend double dot(const vec3& v1, const vec3& v2);
-//       double dot(const vec3& other) const{
-//           return ((e[0]*other.e[0])+(e[1]*other.e[1])+(e[2]*other.e[2]));
-//       }
        friend vec3 cross(const vec3& v1, const vec3& v2);
 
-//       vec3 cross(const vec3& other) const{
-//           return vec3(e[1] * other.e[2] - e[2] * other.e[1],
-//                   e[2] * other.e[0] - e[0] * other.e[2],
-//                   e[0] * other.e[1] - e[1] * other.e[0]);
-//       }
-//
-        //normal is in the incident side:
        friend vec3 reflect (const vec3& v, const vec3& normal);
        //n1-> r_index of incident medium , n2-> .. of refracted medium
-       // normal is in the refracted medium side :
        friend vec3 refract (const vec3& v, const vec3& normal, float n1 , float n2);
 };
 
@@ -118,7 +107,7 @@ vec3 cross(const vec3& v1, const vec3& v2) {
             v1.e[2] * v2.e[0] - v1.e[0] * v2.e[2],
             v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0]);
 }
-//all incident vec and normal vectors are normalized
+//all incident vec and normal vectors and returned vectors are normalized
 vec3 reflect (const vec3& v, const vec3& normal){
     vec3 reflected_ray = v.unit() - (2*dot(v.unit(), normal.unit())*normal.unit());
     return reflected_ray;
