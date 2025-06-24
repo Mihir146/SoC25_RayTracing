@@ -1,8 +1,7 @@
 #ifndef COLOR_H
 #define COLOR_H
 #include"vec3.h"
-#include<iostream>
-
+//#include<iostream>
 using color = vec3;
 
 //pixel_color vector should have components in the range [0,1] only 

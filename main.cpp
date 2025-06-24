@@ -1,38 +1,26 @@
-#include<iostream>
-#include"vec3.h"
-#include"color.h"
-#include"ray.h"
+#include"utils.h"
+//#include<iostream>
+//#include"vec3.h"
+//#include"color.h"
+//#include"ray.h"
 
-//this fn will check if the given ray hits the given sphere
-double hit_sphere(const point3& center, const double radius, const ray& r){
-    vec3 oc = center - r.origin();
-    auto a = r.direction().length_squared();
-    auto h = dot(r.direction(), oc);
-    auto c = oc.length_squared() - radius*radius;
-    auto discriminant = h*h - a*c;
-    if(discriminant < 0.0){
-        return -1.0;
-    }
-    else{
-        //not considering the +D term cuz it would give the second point(behind) the ray hits
-        return (h-std::sqrt(discriminant))/a;
-    }
-}
+#include "hittable.h"
+#include "hittable_list.h"
+#include "sphere.h"
 
-color ray_color(const ray& r){
-    auto t = hit_sphere(point3(0,0,-1), 0.5, r);
-    if(t>0.0){
-        //N is the surface normal vector (normalized)
-        vec3 N = (r.at(t) - vec3(0,0,-1)).unit(); 
-        //we are mapping the unit surface normal vectors components from [-1,1] to [0,1] to be used as a "color vector"
-        return 0.5*color(N.x()+1.0,N.y()+1.0,N.z()+1.0);
+
+
+color ray_color(const ray& r, const hittable& world) {
+    hit_record rec;
+    if (world.hit(r,interval(0,infinity), rec)) {
+        return 0.5 * (rec.normal + color(1,1,1));
     }
-    vec3 unit_direction = r.direction().unit();
-    //a should be b/w 0 and 1 and y comp of unit_direction is b/w -1 and 1 so we making sure to adjust it 
+
+    vec3 unit_direction = (r.direction()).unit();
     auto a = 0.5*(unit_direction.y() + 1.0);
-    //lerping b/w white and blue (look up the form of lerp)
-    return (1.0 - a)*(color(1.0,1.0,1.0)) + (a)*(color(0.5, 0.7, 1.0));
+    return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
 }
+
 
 int main(){
     //aspect ratio is ratio width/height
@@ -43,6 +31,11 @@ int main(){
     int img_height = int(img_width / aspect_ratio);
     img_height = (img_height < 1)? 1:img_height;
 
+    // World
+    hittable_list world;
+
+    world.add(make_shared<sphere>(point3(0,0,-1), 0.5));
+    world.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
     //setup the viewport dimensions
     auto viewport_height = 2.0;
     ////okay if the viewport width is less than 1 as it can be a real number
@@ -73,7 +66,7 @@ int main(){
             auto ray_direction = pixel_center - camera_center;
             ray r(camera_center, ray_direction);
 
-            color pixel_color = ray_color(r);
+            color pixel_color = ray_color(r,world);
             write_color(std::cout, pixel_color);
         }
     }
