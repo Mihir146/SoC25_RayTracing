@@ -15,7 +15,6 @@ class hit_record{
             //we are keeping the normal always against the incident ray
             normal = front_face?outward_normal:-outward_normal;
         }
-
 };
 
 class hittable{
