@@ -79,8 +79,6 @@ class vec3{
            return *this/length();
        }
 
-       friend vec3 random_unit_vector();
-       friend vec3 random_on_hemsphere(const vec3& normal);
        friend double dot(const vec3& v1, const vec3& v2);
        friend vec3 cross(const vec3& v1, const vec3& v2);
 
