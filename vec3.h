@@ -61,6 +61,12 @@ class vec3{
        }
 
        //some useful member functions:
+       static vec3 random(){
+            return vec3(random_double(), random_double(), random_double());
+       }
+       static vec3 random(double min, double max){
+            return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
+       }
        double length_squared() const{
            return (e[0]*e[0]+e[1]*e[1]+e[2]*e[2]);
        }
@@ -72,13 +78,37 @@ class vec3{
        vec3 unit() const{
            return *this/length();
        }
+
+       friend vec3 random_unit_vector();
+       friend vec3 random_on_hemsphere(const vec3& normal);
        friend double dot(const vec3& v1, const vec3& v2);
        friend vec3 cross(const vec3& v1, const vec3& v2);
 
        friend vec3 reflect (const vec3& v, const vec3& normal);
        //n1-> r_index of incident medium , n2-> .. of refracted medium
        friend vec3 refract (const vec3& v, const vec3& normal, float n1 , float n2);
+
 };
+
+inline vec3 random_unit_vector()
+{
+    while (true)
+    {
+        auto p = vec3::random(-1, 1);
+        auto lensq = p.length_squared();
+        if (1e-160 < lensq && lensq <= 1)
+            return p / sqrt(lensq);
+    }
+}
+
+inline vec3 random_on_hemisphere(const vec3 &normal)
+{
+    vec3 on_unit_sphere = random_unit_vector();
+    if (dot(on_unit_sphere, normal) > 0.0) // In the same hemisphere as the normal
+        return on_unit_sphere;
+    else
+        return -on_unit_sphere;
+}
 //helps clarify the geometric difference between the two 
 using point3 = vec3;
 
