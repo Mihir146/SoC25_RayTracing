@@ -39,18 +39,21 @@ private:
 
 class metal : public material{
     public:
-        metal(const color& albedo) : albedo (albedo){}
+    //added new fuzz parameter, which basically deviated the reflected ray a bit from its original path using a sphere
+            metal(const color& albedo, double fuzz) : albedo(albedo), fuzz(fuzz < 1 ? fuzz : 1) {}
 
         bool scatter(const ray &r_in, const hit_record &rec, color &attenuation, ray &scattered)
             const override
         {
             vec3 reflected = reflect(r_in.direction(), rec.normal);
+            reflected = reflected.unit() + (fuzz * random_unit_vector());
             scattered = ray(rec.p, reflected);
             attenuation = albedo;
-            return true;
+            return (dot(scattered.direction(), rec.normal) > 0);
         }
 
         private:
         color albedo;
+        double fuzz;
 };
 #endif
