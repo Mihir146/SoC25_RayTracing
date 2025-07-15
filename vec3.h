@@ -82,10 +82,18 @@ class vec3{
        friend double dot(const vec3& v1, const vec3& v2);
        friend vec3 cross(const vec3& v1, const vec3& v2);
 
-       friend vec3 reflect (const vec3& v, const vec3& normal);
+       //friend vec3 reflect (const vec3& v, const vec3& normal);
        //n1-> r_index of incident medium , n2-> .. of refracted medium
-       friend vec3 refract (const vec3& v, const vec3& normal, float n1 , float n2);
+       //friend vec3 refract (const vec3& v, const vec3& normal, float n1 , float n2);
 
+       //to take care of situations in which the vec3 is near zero (may become zero due to floating pt)
+       //that may lead to inf or nan if you divide by that or something!
+       bool near_zero() const
+       {
+           // Return true if the vector is close to zero in all dimensions.
+           auto s = 1e-8;
+           return (std::fabs(e[0]) < s) && (std::fabs(e[1]) < s) && (std::fabs(e[2]) < s);
+       }
 };
 
 inline vec3 random_unit_vector()
@@ -124,6 +132,10 @@ vec3 operator*(double t, const vec3& v){
     return vec3(v.e[0]*t,v.e[1]*t,v.e[2]*t);
 }
 
+inline vec3 operator*(const vec3& u, const vec3& v) {
+    return vec3(u.e[0] * v.e[0], u.e[1] * v.e[1], u.e[2] * v.e[2]);
+}
+
 vec3 operator/(const vec3& v, double t){
     return vec3(v.e[0]/t,v.e[1]/t,v.e[2]/t);
 }
@@ -138,12 +150,11 @@ vec3 cross(const vec3& v1, const vec3& v2) {
             v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0]);
 }
 //all incident vec and normal vectors and returned vectors are normalized
-vec3 reflect (const vec3& v, const vec3& normal){
-    vec3 reflected_ray = v.unit() - (2*dot(v.unit(), normal.unit())*normal.unit());
-    return reflected_ray;
+inline vec3 reflect (const vec3& v, const vec3& normal){
+    return v - (2*dot(v, normal))*normal;
 }
 
-vec3 refract (const vec3& v, const vec3& normal, double n1, double n2){ //n1-> r_index of incident medium , n2-> .. of refracted medium eta->n1/n2
+inline vec3 refract (const vec3& v, const vec3& normal, double n1, double n2){ //n1-> r_index of incident medium , n2-> .. of refracted medium eta->n1/n2
     auto eta = n1/n2;
     auto cos_thetaI =  -dot(v.unit(), normal.unit());
     auto sin_thetaT_sqr = eta*eta*(1.0-cos_thetaI*cos_thetaI);

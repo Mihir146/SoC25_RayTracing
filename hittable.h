@@ -1,11 +1,18 @@
 #ifndef HITTABLE_H
 #define HITTABLE_H
-//#include<ray.h>
+
+class material;
+//hit_record is just a way 
+//to stuff a bunch of arguments into a class so we can send them as a group
 class hit_record{
     public:
         point3 p;
         double t;
         vec3 normal;
+        //When a ray hits a surface (a particular sphere for example), 
+        //the material pointer in the hit_record will be set to point at the material pointer 
+        //the sphere was given when it was set up in main() when we start
+        shared_ptr<material> mat;
         //this bool value is true if the ray is outside the surface
         //using this you can always know if the ray is hitting from outside or inside!
         bool front_face;
